@@ -1,0 +1,24 @@
+<script>
+import { createEventDispatcher } from "svelte";
+
+const dispatch = createEventDispatcher();
+
+let roomToJoin;
+
+function joinRoom(){
+    dispatch("joinRoom", {
+        room: roomToJoin
+    });
+}
+
+function createRoom() {
+    dispatch("createRoom");
+}
+
+
+</script>
+<h2>Join room</h2>
+<input type="text" bind:value={roomToJoin}>
+<button on:click={joinRoom}>Join</button>
+<p>or</p>
+<button on:click={createRoom}>Create</button>
