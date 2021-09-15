@@ -8,17 +8,19 @@ const io = require("socket.io")(3001 , {
 //Chance.js
 const Chance = require('chance');
 const chance = new Chance();
-const roomNameLength = 6;
-
+const roomroomLength = 6;
+const nameMap = new Map();
 
 //Waiting for user to join or create a new room
 io.on('connection', (socket) => {
   console.log('a user connected');
-  socket.on("createRoom", () => {
+  socket.on("createRoom", (name) => {
+    nameMap.set(socket.id, name);
     createRoom(socket);
   });
-  socket.on("joinRoom", (name) => {
-    joinRoom(socket, name);
+  socket.on("joinRoom", (room, name) => {
+    nameMap.set(socket.id, name);
+    joinRoom(socket, room);
   });
 
   socket.on("disconnect", () => {
@@ -28,42 +30,49 @@ io.on('connection', (socket) => {
 
 //Deletes room 
 function socketDisconnected(socket) {
+  nameMap.delete(socket.id);
   console.log("a user disconnected")
 }
 
 //Creates a new room and adds the user
 function createRoom(socket) {
-  let name = getNewRoomName();
-  console.log("Creating room " + name);
-  hostRoom(socket, name);
-  socket.emit("newRoom", name);
+  let room = getNewRoomName();
+  console.log("Creating room " + room);
+  joinRoom(socket, room, true);
+  socket.emit("newRoom", room);
 }
 
 //Joins the room if it exsists, returns true if success. Also emits "joinRoomSuccess" or "joinRoomFail" to the socket
-function joinRoom(socket, name) {
-  console.log("Socket trying to join room " + name);
-  if (io.of("/").adapter.rooms.has(name) && name.length == roomNameLength) {
+function joinRoom(socket, room, host = false) {
+  console.log("Socket trying to join room " + room);
+  if ((io.of("/").adapter.rooms.has(room) && room.length == roomroomLength) || host) {
     console.log("Success");
-    socket.join(name);
-    socket.emit("joinRoomSuccess", name);
+    socket.join(room);
+    sendUpdatedRoomMembers(room)
+    socket.emit("joinRoomSuccess", room);
   } else {
     console.log("Failed");
-    socket.emit("joinRoomFail", name);
+    socket.emit("joinRoomFail", room);
   }
 
-  return io.of("/").adapter.rooms.has(name);
+  return io.of("/").adapter.rooms.has(room);
   
 }
 
-function hostRoom(socket, name) {
-  socket.join(name);
-  socket.emit("joinRoomSuccess", name);
+function getNewRoomName() {
+  let room = chance.word({ length: roomroomLength });
+  while (io.of("/").adapter.rooms.has(room)){
+    room = chance.word({ length: roomroomLength });
+  }
+  return room;
 }
 
-function getNewRoomName() {
-  let name = chance.word({ length: roomNameLength });
-  while (io.of("/").adapter.rooms.has(name)){
-    name = chance.word({ length: roomNameLength });
-  }
-  return name;
+function sendUpdatedRoomMembers(room) {
+  console.log(room);
+  let membersSet = io.sockets.adapter.rooms.get(room)
+  let memberNames = [...membersSet].map(id => {
+    return nameMap.get(id);
+  });
+  console.log(membersSet);
+  io.to(room).emit("roomMemberUpdate", memberNames)
 }
