@@ -14,15 +14,17 @@ function joinRoom(){
 }
 
 function createRoom() {
-    dispatch("createRoom");
+    dispatch("createRoom", {
+        name: name
+    });
 }
 
 
 </script>
 <h2>Join room</h2>
-<p>Room</p>
-<input type="text" bind:value={name}>
 <p>Name</p>
+<input type="text" bind:value={name}>
+<p>Room</p>
 <input type="text" bind:value={roomToJoin}>
 <button on:click={joinRoom}>Join</button>
 <p>or</p>
