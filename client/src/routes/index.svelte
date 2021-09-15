@@ -27,6 +27,10 @@
         host = true;
     })
 
+    function startGame() {
+        socket.emit("startGame", currentRoom);
+    }
+
 </script>
 <header>
     <h1>Headbands</h1>
@@ -45,6 +49,6 @@
         }}></RoomMenu>
 
     {:else}
-         <Lobby roomName = {currentRoom} members = {roomMembers} host = {host}></Lobby>
+         <Lobby roomName = {currentRoom} members = {roomMembers} host = {host} on:startGame = {startGame}></Lobby>
     {/if}
 </main>   

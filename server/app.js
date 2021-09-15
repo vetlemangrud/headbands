@@ -10,6 +10,7 @@ const Chance = require('chance');
 const chance = new Chance();
 const roomroomLength = 6;
 const nameMap = new Map();
+const hostMap = new Map();
 
 //Waiting for user to join or create a new room
 io.on('connection', (socket) => {
@@ -18,16 +19,25 @@ io.on('connection', (socket) => {
     nameMap.set(socket.id, name);
     createRoom(socket);
   });
+
   socket.on("joinRoom", (room, name) => {
     nameMap.set(socket.id, name);
     joinRoom(socket, room);
   });
 
+  socket.on("startGame", room => {
+    startGame(socket, room);
+  });
+
   socket.on("disconnect", () => {
     socketDisconnected(socket);
   });
+
 });
 
+io.of("/").adapter.on("delete-room", (room) => {
+  hostMap.delete(room);
+});
 //Deletes room 
 function socketDisconnected(socket) {
   nameMap.delete(socket.id);
@@ -39,6 +49,7 @@ function createRoom(socket) {
   let room = getNewRoomName();
   console.log("Creating room " + room);
   joinRoom(socket, room, true);
+  hostMap.set(room, socket.id);
   socket.emit("newRoom", room);
 }
 
@@ -78,4 +89,8 @@ function sendUpdatedRoomMembers(room) {
   });
   console.log(membersSet);
   io.to(room).emit("roomMemberUpdate", memberNames)
+}
+
+function startGame(socket, room){
+  console.log("Hello");
 }
