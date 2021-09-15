@@ -8,6 +8,7 @@
 
     let currentRoom = "";
     let host = false;
+    let roomMembers = [];
 
     socket.on("newRoom", name => {
         console.log(name);
@@ -18,6 +19,7 @@
     })
 
     socket.on("roomMemberUpdate", members => {
+        roomMembers = members;
         console.log(members);
     })
 
@@ -39,6 +41,6 @@
         }}></RoomMenu>
 
     {:else}
-         <Lobby roomName = {currentRoom}></Lobby>
+         <Lobby roomName = {currentRoom}, members = {roomMembers}></Lobby>
     {/if}
 </main>   
