@@ -26,7 +26,7 @@
         <RoomMenu 
         on:joinRoom = {evt => {
             console.log("Joining room: "+evt.detail.room);
-            socket.emit("joinRoom", evt.detail.room);
+            socket.emit("joinRoom", evt.detail.room, evt.detail.name);
             
         }}
         on:createRoom = {evt => {
