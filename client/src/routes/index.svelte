@@ -9,12 +9,16 @@
     let currentRoom = "";
     let host = false;
 
-    socket.on("newRoom", (name) => {
+    socket.on("newRoom", name => {
         console.log(name);
     })
 
-    socket.on("joinRoomSuccess", (name) => {
+    socket.on("joinRoomSuccess", name => {
         currentRoom = name;
+    })
+
+    socket.on("roomMemberUpdate", members => {
+        console.log(members);
     })
 
 </script>
@@ -31,7 +35,7 @@
         }}
         on:createRoom = {evt => {
             console.log("Creating room");
-            socket.emit("createRoom");
+            socket.emit("createRoom", evt.detail.name);
         }}></RoomMenu>
 
     {:else}
