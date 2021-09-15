@@ -23,6 +23,10 @@
         console.log(members);
     })
 
+    socket.on("host", () => {
+        host = true;
+    })
+
 </script>
 <header>
     <h1>Headbands</h1>
@@ -41,6 +45,6 @@
         }}></RoomMenu>
 
     {:else}
-         <Lobby roomName = {currentRoom}, members = {roomMembers}></Lobby>
+         <Lobby roomName = {currentRoom} members = {roomMembers} host = {host}></Lobby>
     {/if}
 </main>   

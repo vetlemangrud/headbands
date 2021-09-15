@@ -50,6 +50,9 @@ function joinRoom(socket, room, host = false) {
     socket.join(room);
     sendUpdatedRoomMembers(room)
     socket.emit("joinRoomSuccess", room);
+    if (host) {
+      socket.emit("host");
+    }
   } else {
     console.log("Failed");
     socket.emit("joinRoomFail", room);
