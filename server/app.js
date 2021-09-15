@@ -92,5 +92,8 @@ function sendUpdatedRoomMembers(room) {
 }
 
 function startGame(socket, room){
-  console.log("Hello");
+  if (hostMap.get(room) == socket.id) {
+    console.log("Hello");
+  }
+  
 }
