@@ -29,6 +29,10 @@ io.on('connection', (socket) => {
     startGame(socket, room);
   });
 
+  socket.on("ready", room => {
+    ready(socket, room);
+  })
+
   socket.on("disconnect", () => {
     socketDisconnected(socket);
   });
@@ -88,12 +92,16 @@ function sendUpdatedRoomMembers(room) {
     return nameMap.get(id);
   });
   console.log(membersSet);
-  io.to(room).emit("roomMemberUpdate", memberNames)
+  io.to(room).emit("roomMemberUpdate", memberNames);
 }
 
 function startGame(socket, room){
   if (hostMap.get(room) == socket.id) {
-    console.log("Hello");
+    console.log("hello");
   }
   
+}
+
+function ready(socket, room) {
+  console.log("READY")
 }
