@@ -8,27 +8,36 @@
 
     let currentRoom = "";
     let host = false;
+    let chooseNames = false;
     let roomMembers = [];
 
     socket.on("newRoom", name => {
         console.log(name);
-    })
+    });
 
     socket.on("joinRoomSuccess", name => {
         currentRoom = name;
-    })
+    });
 
     socket.on("roomMemberUpdate", members => {
         roomMembers = members;
         console.log(members);
-    })
+    });
 
     socket.on("host", () => {
         host = true;
-    })
+    });
+
+    socket.on("chooseNames", () => {
+        chooseNames = true;
+    });
 
     function startGame() {
         socket.emit("startGame", currentRoom);
+    }
+
+    function ready() {
+        socket.emit("ready", currentRoom);
     }
 
 </script>
@@ -49,6 +58,6 @@
         }}></RoomMenu>
 
     {:else}
-         <Lobby roomName = {currentRoom} members = {roomMembers} host = {host} on:startGame = {startGame}></Lobby>
+        <Lobby roomName = {currentRoom} members = {roomMembers} host = {host} on:startGame = {startGame} on:ready = {ready}></Lobby>
     {/if}
 </main>   
