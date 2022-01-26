@@ -8,13 +8,13 @@ const io = require("socket.io")(3001 , {
 //Chance.js
 const Chance = require('chance');
 const chance = new Chance();
-const roomroomLength = 6;
+const roomNameLength = 6;
 const nameMap = new Map();
 const hostMap = new Map();
+const characterMap = new Map();
 
 //Waiting for user to join or create a new room
 io.on('connection', (socket) => {
-  console.log('a user connected');
   socket.on("createRoom", (name) => {
     nameMap.set(socket.id, name);
     createRoom(socket);
@@ -33,6 +33,10 @@ io.on('connection', (socket) => {
     ready(socket, room, character);
   })
 
+  socket.on("disconnecting", () => {
+    socketDisconnecting(socket);
+  });
+
   socket.on("disconnect", () => {
     socketDisconnected(socket);
   });
@@ -42,10 +46,20 @@ io.on('connection', (socket) => {
 io.of("/").adapter.on("delete-room", (room) => {
   hostMap.delete(room);
 });
-//Deletes room 
+//Deletes data associated with socket
 function socketDisconnected(socket) {
   nameMap.delete(socket.id);
+  characterMap.delete(socket.id);
   console.log("a user disconnected")
+}
+//Removes from joined rooms and sends update
+function socketDisconnecting(socket){
+  socket.rooms.forEach(room => {
+    if (room.length == roomNameLength) {
+      socket.leave(room);
+      sendUpdatedRoomMembers(room);
+    }
+  });
 }
 
 //Creates a new room and adds the user
@@ -60,7 +74,7 @@ function createRoom(socket) {
 //Joins the room if it exsists, returns true if success. Also emits "joinRoomSuccess" or "joinRoomFail" to the socket
 function joinRoom(socket, room, host = false) {
   console.log("Socket trying to join room " + room);
-  if ((io.of("/").adapter.rooms.has(room) && room.length == roomroomLength) || host) {
+  if ((io.of("/").adapter.rooms.has(room) && room.length == roomNameLength) || host) {
     console.log("Success");
     socket.join(room);
     sendUpdatedRoomMembers(room)
@@ -78,21 +92,19 @@ function joinRoom(socket, room, host = false) {
 }
 
 function getNewRoomName() {
-  let room = chance.word({ length: roomroomLength });
+  let room = chance.word({ length: roomNameLength });
   while (io.of("/").adapter.rooms.has(room)){
-    room = chance.word({ length: roomroomLength });
+    room = chance.word({ length: roomNameLength });
   }
   return room;
 }
 
 function sendUpdatedRoomMembers(room) {
-  console.log(room);
-  let membersSet = io.sockets.adapter.rooms.get(room)
-  let memberNames = [...membersSet].map(id => {
-    return nameMap.get(id);
+  let membersSet = io.sockets.adapter.rooms.get(room);
+  let members = [...membersSet].map(id => {
+    return [nameMap.get(id), characterMap.has(id)];
   });
-  console.log(membersSet);
-  io.to(room).emit("roomMemberUpdate", memberNames);
+  io.to(room).emit("roomMemberUpdate", members); 
 }
 
 function startGame(socket, room){
@@ -103,5 +115,7 @@ function startGame(socket, room){
 }
 
 function ready(socket, room, character) {
+  characterMap.set(socket.id, character);
+  sendUpdatedRoomMembers(room);
   console.log(character);
 }
