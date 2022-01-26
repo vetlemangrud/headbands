@@ -29,8 +29,8 @@ io.on('connection', (socket) => {
     startGame(socket, room);
   });
 
-  socket.on("ready", room => {
-    ready(socket, room);
+  socket.on("ready", (room, character) => {
+    ready(socket, room, character);
   })
 
   socket.on("disconnect", () => {
@@ -102,6 +102,6 @@ function startGame(socket, room){
   
 }
 
-function ready(socket, room) {
-  console.log("READY")
+function ready(socket, room, character) {
+  console.log(character);
 }

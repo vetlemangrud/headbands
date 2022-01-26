@@ -9,6 +9,7 @@
     let currentRoom = "";
     let host = false;
     let chooseNames = false;
+    let character = "";
     let roomMembers = [];
 
     socket.on("newRoom", name => {
@@ -37,7 +38,7 @@
     }
 
     function ready() {
-        socket.emit("ready", currentRoom);
+        socket.emit("ready", currentRoom, character);
     }
 
 </script>
@@ -58,6 +59,6 @@
         }}></RoomMenu>
 
     {:else}
-        <Lobby roomName = {currentRoom} members = {roomMembers} host = {host} on:startGame = {startGame} on:ready = {ready}></Lobby>
+        <Lobby roomName = {currentRoom} members = {roomMembers} host = {host} bind:character = {character} on:startGame = {startGame} on:ready = {ready}></Lobby>
     {/if}
 </main>   
