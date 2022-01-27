@@ -22,7 +22,6 @@
 
     socket.on("roomMemberUpdate", members => {
         roomMembers = members;
-        console.log(members);
     });
 
     socket.on("host", () => {
@@ -31,6 +30,10 @@
 
     socket.on("chooseNames", () => {
         chooseNames = true;
+    });
+
+    socket.on("gameStarted", characterMap => {
+        console.log(characterMap);
     });
 
     function startGame() {

@@ -50,7 +50,6 @@ io.of("/").adapter.on("delete-room", (room) => {
 function socketDisconnected(socket) {
   nameMap.delete(socket.id);
   characterMap.delete(socket.id);
-  console.log("a user disconnected")
 }
 //Removes from joined rooms and sends update
 function socketDisconnecting(socket){
@@ -107,9 +106,21 @@ function sendUpdatedRoomMembers(room) {
   io.to(room).emit("roomMemberUpdate", members); 
 }
 
-function startGame(socket, room){
+async function startGame(socket, room){
   if (hostMap.get(room) == socket.id) {
-    console.log("hello");
+    let sockets = await io.in(room).fetchSockets();
+    sockets = chance.shuffle(sockets);
+    for (let i = 0; i < sockets.length; i++) {
+      const characters = [];
+      for (let j = 0; j < sockets.length; j++) {
+        if(i != j){
+          characters.push([nameMap.get(sockets[j].id), characterMap.get(sockets[(j + 1) % sockets.length].id)]);
+        }
+        
+      }
+      sockets[i].emit("gameStarted", characters);
+      
+    }
   }
   
 }
@@ -117,5 +128,4 @@ function startGame(socket, room){
 function ready(socket, room, character) {
   characterMap.set(socket.id, character);
   sendUpdatedRoomMembers(room);
-  console.log(character);
 }
