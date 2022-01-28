@@ -1,6 +1,7 @@
 <script>
     import RoomMenu from "$lib/RoomMenu.svelte";
     import Lobby from "$lib/Lobby.svelte";
+    import Characters from "$lib/Characters.svelte";
     
     import { io } from "socket.io-client";
 
@@ -11,6 +12,7 @@
     let chooseNames = false;
     let character = "";
     let roomMembers = [];
+    let characters;
 
     socket.on("newRoom", name => {
         console.log(name);
@@ -33,7 +35,7 @@
     });
 
     socket.on("gameStarted", characterMap => {
-        console.log(characterMap);
+        characters = characterMap;
     });
 
     function startGame() {
@@ -61,6 +63,8 @@
             socket.emit("createRoom", evt.detail.name);
         }}></RoomMenu>
 
+    {:else if characters}
+        <Characters characterMap = {characters}></Characters>
     {:else}
         <Lobby roomName = {currentRoom} members = {roomMembers} host = {host} bind:character = {character} on:startGame = {startGame} on:ready = {ready}></Lobby>
     {/if}
