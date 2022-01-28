@@ -100,6 +100,9 @@ function getNewRoomName() {
 
 function sendUpdatedRoomMembers(room) {
   let membersSet = io.sockets.adapter.rooms.get(room);
+  if (!membersSet) {
+    return;
+  }
   let members = [...membersSet].map(id => {
     return [nameMap.get(id), characterMap.has(id)];
   });
