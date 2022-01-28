@@ -107,7 +107,7 @@ function sendUpdatedRoomMembers(room) {
 }
 
 async function startGame(socket, room){
-  if (hostMap.get(room) == socket.id) {
+  if (hostMap.get(room) == socket.id && characterMap.size == nameMap.size) {
     let sockets = await io.in(room).fetchSockets();
     sockets = chance.shuffle(sockets);
     for (let i = 0; i < sockets.length; i++) {
