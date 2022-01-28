@@ -5,7 +5,7 @@
     
     import { io } from "socket.io-client";
 
-    const socket = io("ws://headbands-vetlemangrud.vercel.app/");
+    const socket = io("ws://hvem-er-jeg.herokuapp.com");
 
     let currentRoom = "";
     let host = false;
