@@ -5,7 +5,7 @@
     
     import { io } from "socket.io-client";
 
-    const socket = io("ws://hvem-er-jeg.herokuapp.com");
+    const socket = io("ws://localhost:3001");
 
     let currentRoom = "";
     let host = false;
@@ -47,6 +47,21 @@
     }
 
 </script>
+<style>
+    
+    header {
+        background-color: #437C90;
+        padding: 40px;
+        text-align: center;
+        
+    }
+    header, main{
+        color: #EEEBD3;
+        font-family: 'Raleway', sans-serif;
+    }
+    
+    
+</style>
 <header>
     <h1>Headbands</h1>
 </header>
@@ -62,7 +77,6 @@
             console.log("Creating room");
             socket.emit("createRoom", evt.detail.name);
         }}></RoomMenu>
-
     {:else if characters}
         <Characters characterMap = {characters}></Characters>
     {:else}
