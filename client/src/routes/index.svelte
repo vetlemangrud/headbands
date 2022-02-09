@@ -5,7 +5,7 @@
     
     import { io } from "socket.io-client";
 
-    const socket = io("ws://localhost:3001");
+    const socket = io("ws://hvem-er-jeg.herokuapp.com/");
 
     let currentRoom = "";
     let host = false;
